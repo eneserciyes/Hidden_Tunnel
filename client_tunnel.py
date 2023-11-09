@@ -1,5 +1,6 @@
 import socket
 import sys
+import random
 
 host = "127.0.0.1"
 port = 4000
@@ -25,19 +26,95 @@ def tunneler(n, p, k):
     '''
     print('n = {}, p = {}, k = {}'.format(n, p, k))
 
-    if k >= 2*n:
-        prev_point = (0, 0)
-        path = '{} {}'.format(prev_point[0], prev_point[1])
-        for i in range(2*(n-1)):
-            if i % 2 == 0:
-                path += ' {} {}'.format(prev_point[0], prev_point[1] + 1)
-                prev_point = (prev_point[0], prev_point[1] + 1)
+    remaining = k
+
+    path = []
+    if n % 2 == 1: start = (n//2, 0)
+    else: start = random.choice([(n//2, 0), (n//2-1, 0)])
+
+    path.append(start)
+
+    while remaining > 0:
+        x, y = path[-1]
+        if y == n-1: break
+        if (n-1) - y == remaining:
+            for i in range(remaining):
+                path.append((x, y+i))
+                remaining -= 1
+        else:
+            # choose next point
+            if n%2 == 1:
+                if remaining-3 >= (n-1) - (y+1):
+                    # possible_paths_to_next_level = [((x, y+1)), ((x+1, y), (x+1, y+1), (x,y+1)), ((x-1, y), (x-1, y+1), (x,y+1))]
+                    roll = random.random()
+                    if roll < 0.33:
+                        path.append((x, y+1))
+                        remaining -= 1
+                    elif roll < 0.66:
+                        path.append((x+1, y))
+                        path.append((x+1, y+1))
+                        path.append((x, y+1))
+                        remaining -= 3
+                    else:
+                        path.append((x-1, y))
+                        path.append((x-1, y+1))
+                        path.append((x, y+1))
+                        remaining -= 3
+                else:
+                    path.append((x, y+1))
+                    remaining -= 1
             else:
-                path += ' {} {}'.format(prev_point[0] + 1, prev_point[1])
-                prev_point = (prev_point[0] + 1, prev_point[1])
-    print(path)
-    print("Len path:", len(path))
-    return path
+                if remaining-3 >= (n-1) - (y+1):
+                    roll = random.random()
+                    if roll < 0.1:
+                        if x == n//2:
+                            path.append((x+1, y))
+                            path.append((x+1, y+1))
+                            path.append((x, y+1))
+                            remaining -= 3
+                        else:
+                            path.append((x-1, y))
+                            path.append((x-1, y+1))
+                            path.append((x, y+1))
+                            remaining -= 3
+                    elif roll < 0.55:
+                        path.append((x, y+1))
+                        remaining -= 1
+                    else:
+                        if x == n//2:
+                            path.append((x, y+1))
+                            path.append((x-1,  y+1))
+                            remaining -= 2
+                        else:
+                            path.append((x, y+1))
+                            path.append((x+1, y+1))
+                            remaining -= 2
+                elif remaining-2 >= (n-1) - (y+1):
+                    roll = random.random()
+                    if roll < 0.5:
+                        if x == n//2:
+                            path.append((x, y+1))
+                            path.append((x-1,  y+1))
+                            remaining -= 2
+                        else:
+                            path.append((x, y+1))
+                            path.append((x+1, y+1))
+                            remaining -= 2
+                    else:
+                        path.append((x, y+1))
+                        remaining -= 1
+                else:
+                    path.append((x, y+1))
+                    remaining -= 1
+
+                
+
+    path_str = ""
+    for i in range(len(path)):
+        path_str += str(path[i][0]) + " " + str(path[i][1]) + " "
+
+    print(path_str)
+    return path_str
 
 if __name__ == "__main__":
 
