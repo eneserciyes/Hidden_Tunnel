@@ -27,13 +27,38 @@ def tunneler(n, p, k):
     print('n = {}, p = {}, k = {}'.format(n, p, k))
 
     remaining = k
+    extra_slack = min((remaining - (n - 1)) // 2, n//2-1)
 
     path = []
     if n % 2 == 1: start = (n//2, 0)
     else: start = random.choice([(n//2, 0), (n//2-1, 0)])
 
-    path.append(start)
+    if extra_slack == 0:
+        path.append(start)
+    if extra_slack == 1:
+        if start[0] == n//2:
+            path.append((n//2+1, 0))
+            path.append((n//2, 0))
+            remaining -= 1
+        else:
+            path.append((n//2-2, 0))
+            path.append((n//2-1, 0))
+            remaining -= 1
+    elif extra_slack > 1:
+        if start[0] == n//2:
+            path.append((n//2+extra_slack-1, 0))
+            path.append((n//2+extra_slack-1, 1))
+            for i in range(1, extra_slack):
+                path.append((n//2+(extra_slack-1) - i, 1))
+            remaining -= (extra_slack-1)
+        if start[0] == n//2-1:
+            path.append((n//2-1 - (extra_slack-1), 0))
+            path.append((n//2-1 - (extra_slack-1), 1))
+            for i in range(1, extra_slack):
+                path.append((n//2-1 - (extra_slack-1) + i, 1))
+            remaining -= (extra_slack-1)
 
+                
     while remaining > 0:
         x, y = path[-1]
         if y == n-1: break
