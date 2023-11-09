@@ -43,7 +43,8 @@ class detector():
             probes = ""
             for i in range(n):
                 for j in range(n):
-                    probes += "{} {} ".format(i, j)
+                    if (i+j) % 2 == 0:
+                        probes += "{} {} ".format(i, j)
         else:
             probes = "none"
 
