@@ -38,7 +38,7 @@ def tunneler(n, p, k):
         x, y = path[-1]
         if y == n-1: break
         if (n-1) - y == remaining:
-            for i in range(remaining):
+            for i in range(1, remaining+1):
                 path.append((x, y+i))
                 remaining -= 1
         else:
